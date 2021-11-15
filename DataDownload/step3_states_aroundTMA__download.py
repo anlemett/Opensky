@@ -85,7 +85,7 @@ def connectToImpala():
                 )
             break
         except paramiko.SSHException as err:
-            print(err)
+            #print(err)
             time.sleep(2)
         except:
             print("exception")
@@ -255,22 +255,22 @@ start_time = time.time()
 
 from multiprocessing import Process
 
+if __name__ == '__main__':
+    for month in MONTHS:
 
-for month in MONTHS:
-
-    procs = [] 
+        procs = [] 
     
-    for week in WEEKS:
+        for week in WEEKS:
         
-        if week == 5 and month == '02' and not calendar.isleap(int(YEAR)):
-            continue
+            if week == 5 and month == '02' and not calendar.isleap(int(YEAR)):
+                continue
         
-        proc = Process(target=download_states_week, args=(month, week))
-        procs.append(proc)
-        proc.start()
+            proc = Process(target=download_states_week, args=(month, week))
+            procs.append(proc)
+            proc.start()
         
-    # complete the processes
-    for proc in procs:
-        proc.join()
+        # complete the processes
+        for proc in procs:
+            proc.join()
 
 print((time.time()-start_time)/60)

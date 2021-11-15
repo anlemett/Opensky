@@ -18,6 +18,9 @@ if not os.path.exists(OUTPUT_DIR):
 # landed and with complete data
 descent_end_altitude = 600 #meters
 
+if AIRPORT_ICAO == "ESGG":
+    descent_end_altitude = 1200 #meters
+
 climb_first_altitude = 1000 # meters
 climb_end_altitude = 2000 #meters
 

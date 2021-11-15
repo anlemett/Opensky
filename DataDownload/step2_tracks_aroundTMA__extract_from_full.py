@@ -64,13 +64,12 @@ def get_tracks_inside_TMA(month, week, tracks_df, csv_output_file):
         
         print("STEP2", flight_type, area, AIRPORT_ICAO, YEAR, month, week, number_of_flights, count, flight_id)
         
+        new_df_inside_TMA = pd.DataFrame()
+        
         if DEPARTURE:
             first_point_outside_TMA_index = get_first_point_outside_TMA(flight_id, new_df)
             
-            if first_point_outside_TMA_index == -1:
-                continue
-            
-            if first_point_outside_TMA_index == 0:
+            if first_point_outside_TMA_index == -1 or first_point_outside_TMA_index == 0:
                 continue
             
             new_df_inside_TMA = new_df.iloc[:first_point_outside_TMA_index+1].copy()
@@ -78,11 +77,10 @@ def get_tracks_inside_TMA(month, week, tracks_df, csv_output_file):
         else:
             first_point_inside_TMA_index = get_first_point_inside_TMA(flight_id, new_df)
             
-            if first_point_inside_TMA_index == -1:
+            if first_point_inside_TMA_index == -1 or first_point_inside_TMA_index == 0:
                 continue
             
-            if first_point_inside_TMA_index != 0:
-                last_point_outside_TMA_index = first_point_inside_TMA_index - 1
+            last_point_outside_TMA_index = first_point_inside_TMA_index - 1
             
             new_df_inside_TMA = new_df.iloc[last_point_outside_TMA_index:].copy()
             
@@ -154,10 +152,7 @@ def get_tracks_inside_circle(month, week, tracks_df, csv_output_file):
         if DEPARTURE:
             first_point_outside_circle_index = get_first_point_outside_circle(flight_id, new_df)
             
-            if first_point_outside_circle_index == -1:
-                continue
-            
-            if first_point_outside_circle_index == 0:
+            if first_point_outside_circle_index == -1 or first_point_outside_circle_index == 0:
                 continue
             
             new_df_inside_circle = new_df.iloc[:first_point_outside_circle_index+1].copy()
@@ -165,11 +160,10 @@ def get_tracks_inside_circle(month, week, tracks_df, csv_output_file):
         else:
             first_point_inside_circle_index = get_first_point_inside_circle(flight_id, new_df)
             
-            if first_point_inside_circle_index == -1:
+            if first_point_inside_circle_index == -1 or first_point_inside_circle_index == 0:
                 continue
             
-            if first_point_inside_circle_index != 0:
-                last_point_outside_circle_index = first_point_inside_circle_index - 1
+            last_point_outside_circle_index = first_point_inside_circle_index - 1
             
             new_df_inside_circle = new_df.iloc[last_point_outside_circle_index:].copy()
             
@@ -199,7 +193,7 @@ def get_first_point_inside_circle(flight_id, new_df):
         lon = row.loc[(flight_id, seq)]['lon']
         if check_circle_contains_point((lat, lon)):
             return seq
-    print(lat, lon)
+    #print(lat, lon)
     return -1
 
 # for departures
@@ -254,22 +248,22 @@ start_time = time.time()
 
 from multiprocessing import Process
 
+if __name__ == '__main__':
+    for month in MONTHS:
 
-for month in MONTHS:
-
-    procs = [] 
+        procs = [] 
     
-    for week in WEEKS:
+        for week in WEEKS:
         
-        if week == 5 and month == '02' and not calendar.isleap(int(year)):
-            continue
+            if week == 5 and month == '02' and not calendar.isleap(int(YEAR)):
+                continue
         
-        proc = Process(target=extract_TMA_part, args=(month, week,))
-        procs.append(proc)
-        proc.start()
+            proc = Process(target=extract_TMA_part, args=(month, week,))
+            procs.append(proc)
+            proc.start()
         
-    # complete the processes
-    for proc in procs:
-        proc.join()
+        # complete the processes
+        for proc in procs:
+            proc.join()
             
 print((time.time()-start_time)/60)

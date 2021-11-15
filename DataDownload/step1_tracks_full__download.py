@@ -7,6 +7,10 @@ import calendar
 import os
 
 DATA_DIR = os.path.join("..", "Data")
+
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
+    
 DATA_DIR = os.path.join(DATA_DIR, AIRPORT_ICAO)
 
 if not os.path.exists(DATA_DIR):
@@ -110,7 +114,7 @@ def get_tracks_data(data_retriever, flights, date_time_begin, date_time_end, mon
 
     for i in range(number_of_flights):
 
-        print("STEP1", flight_type, AIRPORT_ICAO, YEAR, month, week, number_of_flights, i)
+        print("STEP1", flight_type, AIRPORT_ICAO, YEAR, month, week, number_of_flights, i+1)
 
         if flights[i] == 'Start after end time or more than seven days of data requested': #ESSA 22.10.2018-29.10.2018 -> 28.10 to 5th week
             print(flights[i])
@@ -256,41 +260,43 @@ start_time = time.time()
 
 from multiprocessing import Process
 
-for month in MONTHS:
+
+if __name__ == '__main__':
+    for month in MONTHS:
     
-    procs = []
+        procs = []
     
-    for week in WEEKS:
+        for week in WEEKS:
         
-        if week>=1 and week<=4:
+            if week>=1 and week<=4:
 
-            DATE_TIME_BEGIN = datetime(int(YEAR), int(month), (week-1) * 7 + 1, 0, 0, 0, 0, timezone.utc)
-            if month == '02' and week == 4 and not calendar.isleap(int(year)):
-                DATE_TIME_END = datetime(int(YEAR), 3, 1, 0, 0, 0, 0)
-            else:
-                DATE_TIME_END = datetime(int(YEAR), int(month), week * 7 + 1, 0, 0, 0, 0, timezone.utc)
+                DATE_TIME_BEGIN = datetime(int(YEAR), int(month), (week-1) * 7 + 1, 0, 0, 0, 0, timezone.utc)
+                if month == '02' and week == 4 and not calendar.isleap(int(YEAR)):
+                    DATE_TIME_END = datetime(int(YEAR), 3, 1, 0, 0, 0, 0)
+                else:
+                    DATE_TIME_END = datetime(int(YEAR), int(month), week * 7 + 1, 0, 0, 0, 0, timezone.utc)
             
-            proc = Process(target=download_tracks_week, args=(month, week, DATE_TIME_BEGIN, DATE_TIME_END,))
-            procs.append(proc)
-            proc.start()
+                proc = Process(target=download_tracks_week, args=(month, week, DATE_TIME_BEGIN, DATE_TIME_END,))
+                procs.append(proc)
+                proc.start()
             
-        elif week ==5:
+            elif week ==5:
 
-            if month == '02' and not calendar.isleap(int(YEAR)):
-                continue
-            elif month == '12':
-                DATE_TIME_BEGIN = datetime(int(YEAR), 12, 29, 0, 0, 0, 0, timezone.utc)
-                DATE_TIME_END = datetime(int(YEAR) + 1, 1, 1, 0, 0, 0, 0, timezone.utc)
-            else:
-                DATE_TIME_BEGIN = datetime(int(YEAR), int(month), 29, 0, 0, 0, 0, timezone.utc)
-                DATE_TIME_END = datetime(int(YEAR), int(month) + 1, 1, 0, 0, 0, 0, timezone.utc)
+                if month == '02' and not calendar.isleap(int(YEAR)):
+                    continue
+                elif month == '12':
+                    DATE_TIME_BEGIN = datetime(int(YEAR), 12, 29, 0, 0, 0, 0, timezone.utc)
+                    DATE_TIME_END = datetime(int(YEAR) + 1, 1, 1, 0, 0, 0, 0, timezone.utc)
+                else:
+                    DATE_TIME_BEGIN = datetime(int(YEAR), int(month), 29, 0, 0, 0, 0, timezone.utc)
+                    DATE_TIME_END = datetime(int(YEAR), int(month) + 1, 1, 0, 0, 0, 0, timezone.utc)
     
-            proc = Process(target=download_tracks_week, args=(month, 5, DATE_TIME_BEGIN, DATE_TIME_END,))
-            procs.append(proc)
-            proc.start()
+                proc = Process(target=download_tracks_week, args=(month, 5, DATE_TIME_BEGIN, DATE_TIME_END,))
+                procs.append(proc)
+                proc.start()
     
     # complete the processes
-    for proc in procs:
-        proc.join()
+        for proc in procs:
+            proc.join()
 
 print((time.time()-start_time)/60)

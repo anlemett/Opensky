@@ -29,3 +29,6 @@ PEVAK_lon = 11.8229
 PEVAK_lat = 57.7733
 RISMA_lon = 11.9792
 RISMA_lat = 57.0419
+
+#print(sum(TMA_lon)/len(TMA_lon))
+#print(sum(TMA_lat)/len(TMA_lat))

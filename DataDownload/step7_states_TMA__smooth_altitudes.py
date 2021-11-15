@@ -97,12 +97,21 @@ for month in MONTHS:
             
             print("STEP7", flight_type, area, AIRPORT_ICAO, YEAR, month, week, number_of_flights, count, flight_id)
             
-            below_TMA_altitude_threshold_df = flight_id_group[(flight_id_group['rawAltitude'] > 0) & (flight_id_group['rawAltitude'] < TMA_altitude_threshold)]
-            
-            if below_TMA_altitude_threshold_df.empty:    #flight is in cruise
-                continue
-            
             flight_states_df = flight_id_group.copy()
+            
+            first_good_index = 0
+            
+            rawAltitudes = flight_states_df['rawAltitude'].to_list()
+            while ((rawAltitudes[first_good_index] < 0) or (rawAltitudes[first_good_index] > TMA_altitude_threshold)):
+                first_good_index = first_good_index + 1
+                
+            number_of_states = len(flight_states_df.groupby(level='sequence'))
+            if first_good_index >= number_of_states: # flight on cruise or bad data
+                continue
+                
+            if first_good_index != 0:
+                flight_states_df = (flight_states_df.loc[(flight_id, slice(first_good_index,number_of_states)), :]).copy()
+    
             #flight_states_df = df.loc[(flight_id, ), :]
             
             # PHASE 1 Substitute big fluctuations with neighbor values
