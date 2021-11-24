@@ -17,14 +17,17 @@ import calendar
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
+# append the path of the parent directory
+sys.path.append("..")
+
 if AIRPORT_ICAO == "ESSA":
-    from constants_ESSA import *
+    from airports.constants_ESSA import *
 elif AIRPORT_ICAO == "ESGG":
-    from constants_ESGG import *
+    from airports.constants_ESGG import *
 elif AIRPORT_ICAO == "EIDW":
-    from constants_EIDW import *
+    from airports.constants_EIDW import *
 elif AIRPORT_ICAO == "LOWW":
-    from constants_LOWW import *
+    from airports.constants_LOWW import *
     
 import time
 start_time = time.time()

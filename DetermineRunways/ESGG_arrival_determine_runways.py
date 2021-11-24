@@ -46,7 +46,7 @@ def get_all_states(input_filename):
     return df
 
 
-def determine_entry_points_and_runways(month, week):
+def determine_runways(month, week):
     
     input_filename = "osn_arrival_" + AIRPORT_ICAO + "_states_"+  area + "_" + YEAR + \
         "_" + month + "_week" + str(week) + ".csv"
@@ -78,9 +78,9 @@ def determine_entry_points_and_runways(month, week):
         # Determine Runway based on lat, lon
         
         runway = ""
-        trajectory_point_last = [flight_id_group['lat'][-1], flight_id_group['lon'][-1]]
+        trajectory_point_last = [flight_df['lat'][-1], flight_df['lon'][-1]]
         # 20 seconds before:
-        trajectory_point_before_last = [flight_id_group['lat'][-20], flight_id_group['lon'][-20]]
+        trajectory_point_before_last = [flight_df['lat'][-20], flight_df['lon'][-20]]
         
         #fwd_azimuth, back_azimuth, distance = geod.inv(lat1, long1, lat2, long2)
         trajectory_azimuth, temp1, temp2 = geod.inv(trajectory_point_before_last[0],
@@ -131,9 +131,9 @@ def create_runways_files(month, week):
         runway = runways_df.loc[flight_id][['runway']].values[0]
 
         if runway == "03":
-            rwy03_df = rwy03_df.append(flight_id_group)
+            rwy03_df = rwy03_df.append(flight_df)
         else:
-            rwy21_df = rwy21_df.append(flight_id_group)
+            rwy21_df = rwy21_df.append(flight_df)
 
     WEEK_OUTPUT_DIR = os.path.join(RUNWAYS_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + \
         "_" + YEAR + "_" + month + "_week" + str(week) + "_by_runways")

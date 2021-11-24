@@ -89,7 +89,7 @@ def determine_runways(month, week):
     runways_df = pd.DataFrame(columns=['flightId', 'date', 'hour', 'runway'])
     
     count = 0
-    for flight_id, flight_id_group in states_df.groupby(level='flightId'):
+    for flight_id, flight_df in states_df.groupby(level='flightId'):
         
         count = count + 1
         print("determine runways", AIRPORT_ICAO, YEAR, month, week, number_of_flights, count, flight_id)
@@ -104,9 +104,9 @@ def determine_runways(month, week):
         # Determine Runway based on lat, lon
         
         runway = ""
-        trajectory_point_last = [flight_id_group['lat'][-1], flight_id_group['lon'][-1]]
+        trajectory_point_last = [flight_df['lat'][-1], flight_df['lon'][-1]]
         # 30 seconds before:
-        trajectory_point_before_last = [flight_id_group['lat'][-30], flight_id_group['lon'][-30]]
+        trajectory_point_before_last = [flight_df['lat'][-30], flight_df['lon'][-30]]
         
         #fwd_azimuth, back_azimuth, distance = geod.inv(lat1, long1, lat2, long2)
         trajectory_azimuth, temp1, temp2 = geod.inv(trajectory_point_before_last[0],
@@ -164,24 +164,24 @@ def create_runways_files(month, week):
     rwy26_df = pd.DataFrame()
     
     count = 0
-    for flight_id, flight_id_group in states_df.groupby(level='flightId'):
+    for flight_id, flight_df in states_df.groupby(level='flightId'):
         count = count + 1
         print("create runways files", AIRPORT_ICAO, YEAR, month, week, number_of_flights, count, flight_id)
 
         runway = runways_df.loc[flight_id][['runway']].values[0]
     
         if runway == "01L":
-            rwy01L_df = rwy01L_df.append(flight_id_group)
+            rwy01L_df = rwy01L_df.append(flight_df)
         elif runway == "19R":
-            rwy19R_df = rwy19R_df.append(flight_id_group)
+            rwy19R_df = rwy19R_df.append(flight_df)
         elif runway == "01R":
-            rwy01R_df = rwy01R_df.append(flight_id_group)
+            rwy01R_df = rwy01R_df.append(flight_df)
         elif runway == "19L":
-            rwy19L_df = rwy19L_df.append(flight_id_group)
+            rwy19L_df = rwy19L_df.append(flight_df)
         elif runway == "08":
-            rwy08_df = rwy08_df.append(flight_id_group)
+            rwy08_df = rwy08_df.append(flight_df)
         else:
-            rwy26_df = rwy26_df.append(flight_id_group)
+            rwy26_df = rwy26_df.append(flight_df)
 
     WEEK_OUTPUT_DIR = os.path.join(RUNWAYS_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + \
         "_" + YEAR + "_" + month + "_week" + str(week) + "_by_runways")
