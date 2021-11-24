@@ -21,8 +21,8 @@ area = (str(RADIUS) + "NM", "TMA")[AREA == "TMA"]
 INPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR)
 RUNWAYS_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR + "_by_runways")
 
-if not os.path.exists(OUTPUT_DIR):
-   os.makedirs(OUTPUT_DIR)
+if not os.path.exists(RUNWAYS_DIR):
+   os.makedirs(RUNWAYS_DIR)
 
 geod = pyproj.Geod(ellps='WGS84')   # to determine runways via azimuth
 #fwd_azimuth, back_azimuth, distance = geod.inv(lat1, long1, lat2, long2)
@@ -70,11 +70,11 @@ def get_all_states(input_filename):
 
 def determine_runways(month, week):
     
-    input_filename = "osn_arrival" + AIRPORT_ICAO + "_states_"+  area + "_" + YEAR + \
+    input_filename = "osn_arrival_" + AIRPORT_ICAO + "_states_"+  area + "_" + YEAR + \
         "_" + month + "_week" + str(week) + ".csv"
     full_input_filename = os.path.join(INPUT_DIR, input_filename)
          
-    output_filename = "osn_arrival" + AIRPORT_ICAO + "runways_" + year + '_' + \
+    output_filename = "osn_arrival_" + AIRPORT_ICAO + "_runways_" + YEAR + '_' + \
         month + "_week" + str(week) + ".csv"
     full_output_filename = os.path.join(RUNWAYS_DIR, output_filename)
 
@@ -144,11 +144,11 @@ def create_runways_files(month, week):
 
     full_states_filename = os.path.join(INPUT_DIR, states_filename)
     
-    states_df = get_all_states(full_input_filename1)
+    states_df = get_all_states(full_states_filename)
     
     number_of_flights = len(states_df.groupby(level='flightId'))
     
-    runways_filename = "osn_arrival" + AIRPORT_ICAO + "runways_" + year + '_' + \
+    runways_filename = "osn_arrival_" + AIRPORT_ICAO + "_runways_" + YEAR + '_' + \
         month + "_week" + str(week) + ".csv"
     full_runways_filename = os.path.join(RUNWAYS_DIR, runways_filename)
     
@@ -182,7 +182,7 @@ def create_runways_files(month, week):
         else:
             rwy26_df = rwy26_df.append(flight_id_group)
 
-    WEEK_OUTPUT_DIR = os.path.join(OUTPUT_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + \
+    WEEK_OUTPUT_DIR = os.path.join(RUNWAYS_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + \
         "_" + YEAR + "_" + month + "_week" + str(week) + "_by_runways")
 
     if not os.path.exists(WEEK_OUTPUT_DIR):

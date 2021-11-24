@@ -99,19 +99,6 @@ for month in MONTHS:
             
             flight_states_df = flight_id_group.copy()
             
-            first_good_index = 0
-            
-            rawAltitudes = flight_states_df['rawAltitude'].to_list()
-            while ((rawAltitudes[first_good_index] < 0) or (rawAltitudes[first_good_index] > TMA_altitude_threshold)):
-                first_good_index = first_good_index + 1
-                
-            number_of_states = len(flight_states_df.groupby(level='sequence'))
-            if first_good_index >= number_of_states: # flight on cruise or bad data
-                continue
-                
-            if first_good_index != 0:
-                flight_states_df = (flight_states_df.loc[(flight_id, slice(first_good_index,number_of_states)), :]).copy()
-    
             #flight_states_df = df.loc[(flight_id, ), :]
             
             # PHASE 1 Substitute big fluctuations with neighbor values
@@ -130,11 +117,15 @@ for month in MONTHS:
                 
                 prev_altitude = list(flight_states_df['rawAltitude'])[i]
                 
-                while (prev_altitude==0) or (prev_altitude > TMA_altitude_threshold): #fluctuation
+                while ((prev_altitude<=0) or (prev_altitude > TMA_altitude_threshold)) and i < df_len-1: #fluctuation
                     i = i + 1
                     prev_altitude = list(flight_states_df['rawAltitude'])[i]
                 
+
                 ii = i
+                if ii == df_len-1:    # flight on cruise or bad data
+                    continue
+                
                 while i>0:
                     i = i - 1
                     opensky_states_fixed_altitudes.append(prev_altitude)
