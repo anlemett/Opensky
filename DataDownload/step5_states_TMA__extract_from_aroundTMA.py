@@ -23,6 +23,8 @@ from shapely.geometry.polygon import Polygon
 
 from geopy.distance import geodesic
 
+import sys
+
 # append the path of the parent directory
 sys.path.append("..")
 
