@@ -17,6 +17,8 @@ import calendar
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
+import sys
+
 # append the path of the parent directory
 sys.path.append("..")
 
