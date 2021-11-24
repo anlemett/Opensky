@@ -7,8 +7,11 @@ from shapely.geometry import Point
 from shapely.geometry import LineString
 from datetime import datetime
 import calendar
+import sys
 
-from airport.constants_ESSA import *
+# append the path of the parent directory
+sys.path.append("..")
+from airports.constants_ESSA import *
 
 import time
 start_time = time.time()

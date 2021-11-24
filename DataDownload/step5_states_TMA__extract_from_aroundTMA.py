@@ -23,14 +23,17 @@ from shapely.geometry.polygon import Polygon
 
 from geopy.distance import geodesic
 
+# append the path of the parent directory
+sys.path.append("..")
+
 if AIRPORT_ICAO == "ESSA":
-    from constants_ESSA import *
+    from airports.constants_ESSA import *
 elif AIRPORT_ICAO == "ESGG":
-    from constants_ESGG import *
+    from airports.constants_ESGG import *
 elif AIRPORT_ICAO == "EIDW":
-    from constants_EIDW import *
+    from airports.constants_EIDW import *
 elif AIRPORT_ICAO == "LOWW":
-    from constants_LOWW import *
+    from airports.constants_LOWW import *
     
 flight_type = "Departure" if DEPARTURE else "Arrival"
 

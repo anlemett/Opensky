@@ -1,8 +1,8 @@
 #!/bin/bash
-# python step1_tracks_full__download.py
-#python step2_tracks_aroundTMA__extract_from_full.py
-#python step3_states_aroundTMA__download.py
-#python step4_states_aroundTMA__fix_lat_lon.py
+python step1_tracks_full__download.py
+python step2_tracks_aroundTMA__extract_from_full.py
+python step3_states_aroundTMA__download.py
+python step4_states_aroundTMA__fix_lat_lon.py
 python step5_states_TMA__extract_from_aroundTMA.py
 python step6_states_TMA__filter_out_by_callsign.py
 python step7_states_TMA__smooth_altitudes.py

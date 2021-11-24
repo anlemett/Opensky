@@ -10,14 +10,20 @@ from shapely.geometry.polygon import Polygon
 from geopy.distance import geodesic
 
 import os
+
+import sys
+
+# append the path of the parent directory
+sys.path.append("..")
+
 if AIRPORT_ICAO == "ESSA":
-    from constants_ESSA import *
+    from airports.constants_ESSA import *
 elif AIRPORT_ICAO == "ESGG":
-    from constants_ESGG import *
+    from airports.constants_ESGG import *
 elif AIRPORT_ICAO == "EIDW":
-    from constants_EIDW import *
+    from airports.constants_EIDW import *
 elif AIRPORT_ICAO == "LOWW":
-    from constants_LOWW import *
+    from airports.constants_LOWW import *
 
 DATA_DIR = os.path.join("..", "Data")
 DATA_DIR = os.path.join(DATA_DIR, AIRPORT_ICAO)
