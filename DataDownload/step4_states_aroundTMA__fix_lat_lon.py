@@ -3,7 +3,9 @@ from config import *
 # Threshold for lat/lon fluctuattion
 # If the threshold is too big, small fluctuations will be skiped
 # If the threshold is too small, the real value might be treated as fluctuation, hence the whole trajectory is messed up
-threshold = 0.5
+# It's possible that the lat(lon) is the same for some time (error) and then we get the correct  lat(lon), but
+# the difference with the previous correct one is greater than the threshold => increase the threshold
+threshold = 1 # degree
 
 import os
 
@@ -57,19 +59,19 @@ for month in MONTHS:
 
         count = 0
 
-        for flight_id, flight_id_group in df.groupby(level='flightId'):
+        for flight_id, flight_df in df.groupby(level='flightId'):
             
             count = count + 1
             print("STEP4", flight_type, area, AIRPORT_ICAO, YEAR, month, week, number_of_flights, count, flight_id)
             
-            flight_states_df = flight_id_group.copy()
+            flight_states_df = flight_df.copy()
             
             number_of_points = len(flight_states_df)
             
             if not flight_states_df.empty:
                 
-                lats = list(flight_id_group['lat'])
-                lons = list(flight_id_group['lon'])
+                lats = list(flight_df['lat'])
+                lons = list(flight_df['lon'])
                 
                 if DEPARTURE:
                     first_good_point_index = 0
@@ -130,7 +132,7 @@ for month in MONTHS:
                     
                 flight_states_df["lat"] = lats
                 flight_states_df["lon"] = lons
-
+            
             flight_states_df.reset_index(drop = False, inplace = True)
             flight_states_df = flight_states_df[['flightId', 'sequence', 'timestamp', 'lat', 'lon', 'rawAltitude', 'velocity', 'beginDate', 'endDate']]
             
