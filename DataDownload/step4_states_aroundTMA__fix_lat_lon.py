@@ -3,9 +3,9 @@ from config import *
 # Threshold for lat/lon fluctuattion
 # If the threshold is too big, small fluctuations will be skiped
 # If the threshold is too small, the real value might be treated as fluctuation, hence the whole trajectory is messed up
-# It's possible that the lat(lon) is the same for some time (error) and then we get the correct  lat(lon), but
-# the difference with the previous correct one is greater than the threshold => increase the threshold
-threshold = 1 # degree
+threshold1 = 0.1 # degree
+# This threshold helps to fix 0 lat and lon (might be helpful if TMA close to 0 parallel or medidian) 
+threshold2 = 10 # degree
 
 import os
 
@@ -24,6 +24,23 @@ import pandas as pd
 import numpy as np
 import calendar
 
+import sys
+
+# append the path of the parent directory
+sys.path.append("..")
+
+if AIRPORT_ICAO == "ESSA":
+    from airports.constants_ESSA import *
+elif AIRPORT_ICAO == "ESGG":
+    from airports.constants_ESGG import *
+elif AIRPORT_ICAO == "EIDW":
+    from airports.constants_EIDW import *
+elif AIRPORT_ICAO == "LOWW":
+    from airports.constants_LOWW import *
+    
+central_lat = min(TMA_lat) + (max(TMA_lat)-min(TMA_lat))/2
+central_lon = min(TMA_lon) + (max(TMA_lon)-min(TMA_lon))/2
+    
 import time
 start_time = time.time()
 
@@ -73,13 +90,12 @@ for month in MONTHS:
                 lats = list(flight_df['lat'])
                 lons = list(flight_df['lon'])
                 
-                if DEPARTURE:
-                    first_good_point_index = 0
-                    while lats[first_good_point_index]==0 and lons[first_good_point_index]==0:
-                        first_good_point_index = first_good_point_index + 1
-                else:
-                    # assume that for arrivals first point is close to TMA, if not the flight will be filtered out on the last step
-                    first_good_point_index = 0
+                number_of_points = len(lats)
+                
+                first_good_point_index = 0
+                while (abs(abs(lats[first_good_point_index]) - abs (central_lat)) > threshold2) and \
+                      (abs(abs(lons[first_good_point_index]) - abs (central_lon)) > threshold2):
+                    first_good_point_index = first_good_point_index + 1
 
                 for lat_lon_index in range(0,first_good_point_index):
                     lats[lat_lon_index] = lats[first_good_point_index]
@@ -91,9 +107,15 @@ for month in MONTHS:
                 for i in range(first_good_point_index+1, number_of_points): 
                     
                     shift = 0
+                    too_long_shift = False # if the latitudes are the same for some time (error) and then we get the right latitude but the difference is bigger than threshold1
                     
-                    while ((i+shift < number_of_points) and ((abs(abs(lats[i+shift]) - abs (prev_lat)) > threshold) or (abs(abs(lats[i+shift]) - abs (prev_lat)) == 0))):
+                    while (((abs(abs(lats[i+shift]) - abs (prev_lat)) > threshold1) and not too_long_shift or \
+                            (abs(abs(lats[i+shift]) - abs (prev_lat)) == 0)) ) or (abs(abs(lats[i+shift]) - abs (central_lat)) > threshold2):
                         shift = shift + 1
+                        if shift > 10:
+                            too_long_shift = True
+                        if i+shift == number_of_points:
+                            break
                     
                     if (i+shift < number_of_points):
                         lats_step = (lats[i+shift] - prev_lat)/(shift + 1)
@@ -110,12 +132,19 @@ for month in MONTHS:
                     prev_lat = lats[i]
                 
                 
-                for i in range(first_good_point_index+1, number_of_points):
+                for i in range(first_good_point_index, number_of_points):
                     
                     shift = 0
+                    too_long_shift = False # if the longitudes are the same for some time (error) and then we get the right longitude but the difference is bigger than threshold
                     
-                    while ((i+shift < number_of_points) and ((abs(abs(lons[i+shift]) - abs (prev_lon)) > threshold) or (abs(abs(lons[i+shift]) - abs (prev_lon)) == 0))):
+                    while ((i+shift < number_of_points-1) and ((abs(abs(lons[i+shift]) - abs (prev_lon)) > threshold1) and not too_long_shift or \
+                            (abs(abs(lons[i+shift]) - abs (prev_lon)) == 0))) or (abs(abs(lons[i+shift]) - abs (central_lon)) > threshold2):
                         shift = shift + 1
+                        if shift > 10:
+                            too_long_shift = True
+                        if i+shift == number_of_points:
+                            break
+
                     
                     if (i+shift < number_of_points):
                         lons_step = (lons[i+shift] - prev_lon)/(shift + 1)

@@ -113,35 +113,47 @@ for month in MONTHS:
                 opensky_states_times = []
                 opensky_states_fixed_altitudes = []
                 
-                i = 0
+                shift = 0 # shift of the wrong values
                 
-                prev_altitude = list(flight_states_df['rawAltitude'])[i]
+                prev_altitude = list(flight_states_df['rawAltitude'])[shift]
                 
-                while ((prev_altitude<=0) or (prev_altitude > TMA_altitude_threshold)) and i < df_len-1: #fluctuation
-                    i = i + 1
-                    prev_altitude = list(flight_states_df['rawAltitude'])[i]
+                while ((prev_altitude<=0) or (prev_altitude > TMA_altitude_threshold)) and shift < df_len-1: #fluctuation
+                    shift = shift + 1
+                    prev_altitude = list(flight_states_df['rawAltitude'])[shift]
                 
 
-                ii = i
-                if ii == df_len-1:    # flight on cruise or bad data
+                first_good_altitude = shift
+                if first_good_altitude == df_len-1:    # flight on cruise or bad data
                     continue
                 
-                while i>0:
-                    i = i - 1
+                while shift>0:
+                    shift = shift - 1
                     opensky_states_fixed_altitudes.append(prev_altitude)
-                
+  
+                shift = 0 # shift of the wrong values
+                too_long_shift = False # if the altitudes are the same for some time (error) and then we get the right altitude but the difference is bigger than threshold
+ 
                 for seq, row in flight_states_df.iterrows():
                     
-                    if seq < ii:
+                    if seq < first_good_altitude:
                         continue
-                    
+
                     opensky_states_altitudes.append(row['rawAltitude'])
                     
-                    if (row['rawAltitude'] < prev_altitude) & (prev_altitude-row['rawAltitude'] > altitude_fluctuation_threshold_down):
+                    if prev_altitude-row['rawAltitude'] == 0:
+                        shift = shift + 1
+                        if shift > 10:
+                            too_long_shift = True
+                    else:
+                        shift = 0
+                        too_long_shift = False
+ 
+                    
+                    if (row['rawAltitude'] < prev_altitude) and ((prev_altitude-row['rawAltitude'] > altitude_fluctuation_threshold_down) and not too_long_shift):
                         opensky_states_fixed_altitudes.append(prev_altitude)
                         continue
                    
-                    if (row['rawAltitude'] > prev_altitude) & (row['rawAltitude'] - prev_altitude > altitude_fluctuation_threshold_up):
+                    if (row['rawAltitude'] > prev_altitude) and ((row['rawAltitude'] - prev_altitude > altitude_fluctuation_threshold_up) and not too_long_shift):
                         opensky_states_fixed_altitudes.append(prev_altitude)
                         continue
                     
