@@ -9,6 +9,7 @@ AIRPORT_ICAO = "ESGG"
 #AIRPORT_ICAO = "ESNO" #Ovik, no flights
 #AIRPORT_ICAO = "ESNU" #Umeo
 #AIRPORT_ICAO = "ESMS" #Malmo
+#AIRPORT_ICAO = "ESSL" #Linkoping 
 
 #DEPARTURE = True
 DEPARTURE = False
@@ -23,11 +24,12 @@ WEEKS = [5]
 
 
 # AREA possible values: "TMA", "CIRCLE"
-#AREA = "TMA"
-AREA = "CIRCLE"
+AREA = "TMA"
+#AREA = "CIRCLE"
 
 RADIUS = 50 # in NM
 
+# center of the circle
 if AIRPORT_ICAO == "ESSA":
     # center of runway 01R
     CENTRAL_LAT = 59.64
@@ -36,7 +38,26 @@ elif AIRPORT_ICAO == "ESGG":
     # center of TMA
     CENTRAL_LAT = 58.097
     CENTRAL_LON = 12.444
+elif AIRPORT_ICAO == "EIDW":
+    # center of runway 28L
+    CENTRAL_LAT = 53.42
+    CENTRAL_LON = -6.27
+elif AIRPORT_ICAO == "LOWW":
+    # center of runway 16
+    CENTRAL_LAT = 48.11
+    CENTRAL_LON = 16.59
 
+# append the path of the parent directory
+import sys
+sys.path.append("..")
 
-
-
+if AIRPORT_ICAO == "ESSA":
+    from airports.constants_ESSA import *
+elif AIRPORT_ICAO == "ESGG":
+    from airports.constants_ESGG import *
+elif AIRPORT_ICAO == "EIDW":
+    from airports.constants_EIDW import *
+elif AIRPORT_ICAO == "LOWW":
+    from airports.constants_LOWW import *
+elif AIRPORT_ICAO == "ESSL":
+    from airports.constants_ESSL import *

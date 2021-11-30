@@ -24,20 +24,6 @@ import pandas as pd
 import numpy as np
 import calendar
 
-import sys
-
-# append the path of the parent directory
-sys.path.append("..")
-
-if AIRPORT_ICAO == "ESSA":
-    from airports.constants_ESSA import *
-elif AIRPORT_ICAO == "ESGG":
-    from airports.constants_ESGG import *
-elif AIRPORT_ICAO == "EIDW":
-    from airports.constants_EIDW import *
-elif AIRPORT_ICAO == "LOWW":
-    from airports.constants_LOWW import *
-    
 central_lat = min(TMA_lat) + (max(TMA_lat)-min(TMA_lat))/2
 central_lon = min(TMA_lon) + (max(TMA_lon)-min(TMA_lon))/2
     

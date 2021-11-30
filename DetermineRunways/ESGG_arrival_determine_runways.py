@@ -99,6 +99,8 @@ def determine_runways(month, week):
                                         'runway': runway}, ignore_index=True)
 
     runways_df.to_csv(full_output_filename, sep=' ', encoding='utf-8', float_format='%.3f', header=True, index=False)
+    
+    return number_of_flights
 
 
 def create_runways_files(month, week):
@@ -116,7 +118,7 @@ def create_runways_files(month, week):
         month + "_week" + str(week) + ".csv"
     full_runways_filename = os.path.join(RUNWAYS_DIR, runways_filename)
     
-    runways_df = pd.read_csv(full_runways_filename, sep=' ')
+    runways_df = pd.read_csv(full_runways_filename, sep=' ',dtype={'flightId':str, 'runway':str})
     runways_df.set_index(['flightId'], inplace=True)
 
     rwy03_df = pd.DataFrame()
@@ -148,18 +150,23 @@ def create_runways_files(month, week):
     rwy03_df.to_csv(full_output_filename + "_rwy03.csv", sep=' ', encoding='utf-8', float_format='%.3f', index = True, header = False)
     rwy21_df.to_csv(full_output_filename + "_rwy21.csv", sep=' ', encoding='utf-8', float_format='%.3f', index = True, header = False)
     
+    rwy03_number_of_flights = len(rwy03_df.groupby(level='flightId')) if not rwy03_df.empty else 0
+    rwy21_number_of_flights = len(rwy21_df.groupby(level='flightId')) if not rwy21_df.empty else 0
+
+    return (rwy03_number_of_flights, rwy21_number_of_flights)
+    
     
 def main():
- 
+    
     for month in MONTHS:
         
         for week in WEEKS:
         
             if week == 5 and month == '02' and not calendar.isleap(int(YEAR)):
                 continue
-        
+            
             determine_runways(month, week)
-                       
+                      
             create_runways_files(month, week)
     
 main()    

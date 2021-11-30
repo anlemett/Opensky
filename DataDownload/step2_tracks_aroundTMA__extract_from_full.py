@@ -11,20 +11,6 @@ from geopy.distance import geodesic
 
 import os
 
-import sys
-
-# append the path of the parent directory
-sys.path.append("..")
-
-if AIRPORT_ICAO == "ESSA":
-    from airports.constants_ESSA import *
-elif AIRPORT_ICAO == "ESGG":
-    from airports.constants_ESGG import *
-elif AIRPORT_ICAO == "EIDW":
-    from airports.constants_EIDW import *
-elif AIRPORT_ICAO == "LOWW":
-    from airports.constants_LOWW import *
-
 DATA_DIR = os.path.join("..", "Data")
 DATA_DIR = os.path.join(DATA_DIR, AIRPORT_ICAO)
 DATA_DIR = os.path.join(DATA_DIR, YEAR)
