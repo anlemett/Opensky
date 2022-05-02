@@ -62,9 +62,10 @@ def is_left(Point3):
 
 def get_all_states(input_filename):
 
+    print(input_filename)
     df = pd.read_csv(input_filename, sep=' ',
         names = ['flightId', 'sequence', 'timestamp', 'lat', 'lon', 'rawAltitude', 'altitude', 'velocity', 'beginDate', 'endDate'],
-        dtype={'flightId':str, 'sequence':int, 'timestamp':int, 'lat':float, 'lon':float, 'rawAltitude':int, 'altitude':float, 'velocity':float, 'beginDate':str, 'endDate':str})
+        dtype={'flightId':str, 'sequence':int, 'timestamp':int, 'lat':float, 'lon':float, 'rawAltitude':int, 'altitude':int, 'velocity':float, 'beginDate':str, 'endDate':str})
     
     df.set_index(['flightId', 'sequence'], inplace=True)
     

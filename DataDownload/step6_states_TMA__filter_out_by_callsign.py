@@ -111,6 +111,8 @@ for month in MONTHS:
         
         df = df[~df.flightId.str.contains('|'.join(searchfor))]
         
+        # TODO: maybe cargo airlines? E.g. starting with FDX?
+        
         
         df = df.drop('callsign', 1)
         
