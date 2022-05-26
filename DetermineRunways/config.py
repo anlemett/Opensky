@@ -1,6 +1,6 @@
 
-#AIRPORT_ICAO = "ESSA"
-AIRPORT_ICAO = "ESGG"
+AIRPORT_ICAO = "ESSA"
+#AIRPORT_ICAO = "ESGG"
 #AIRPORT_ICAO = "EIDW" # Dublin
 #AIRPORT_ICAO = "LOWW" # Vienna
 
@@ -13,13 +13,13 @@ AIRPORT_ICAO = "ESGG"
 #DEPARTURE = True
 DEPARTURE = False
 
-YEAR = '2020'
+YEAR = '2019'
 
 #MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
-MONTHS = ['02']
+MONTHS = ['05']
 
 #WEEKS = [1,2,3,4,5]
-WEEKS = [5]
+WEEKS = [4]
 
 
 # AREA possible values: "TMA", "CIRCLE"

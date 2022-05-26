@@ -18,6 +18,7 @@ start_time = time.time()
 
 DATA_DIR = os.path.join("..", "Data")
 DATA_DIR = os.path.join(DATA_DIR, AIRPORT_ICAO)
+DATA_DIR = os.path.join(DATA_DIR, "TMA")
 DATA_DIR = os.path.join(DATA_DIR, YEAR)
 
 area = (str(RADIUS) + "NM", "TMA")[AREA == "TMA"]
