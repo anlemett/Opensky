@@ -50,13 +50,13 @@ def get_states_inside_TMA(states_df, month, week):
         if DEPARTURE:
             last_point_index = get_TMA_last_point_index(flight_id, flight_df)
             
+            print(last_point_index)
+            
             if last_point_index==-1:
                 continue
             
             if last_point_index==0:
                 continue
-            
-            #print(last_point_index)
             
             new_df_inside_TMA = flight_df.loc[flight_df.index.get_level_values('sequence') < last_point_index]
             
@@ -99,8 +99,7 @@ def get_TMA_last_point_index(flight_id, flight_df):
             #print(lon, lat)
             return seq
     
-    print("-1", lat, lon)
-    return -1
+    return seq
  
 def get_TMA_first_point_index(flight_id, flight_df):
     

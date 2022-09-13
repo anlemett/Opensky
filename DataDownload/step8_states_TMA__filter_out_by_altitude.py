@@ -24,6 +24,9 @@ if AIRPORT_ICAO == "ESGG":
 climb_first_altitude = 1000 # meters
 climb_end_altitude = 2000 #meters
 
+if AIRPORT_ICAO == "ENGM":
+    climb_first_altitude = 1400 #meters
+
 import pandas as pd
 import numpy as np
 import calendar

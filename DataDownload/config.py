@@ -1,6 +1,6 @@
 
 #AIRPORT_ICAO = "ESSA"
-AIRPORT_ICAO = "ESGG"
+#AIRPORT_ICAO = "ESGG"
 #AIRPORT_ICAO = "EIDW" # Dublin
 #AIRPORT_ICAO = "LOWW" # Vienna
 
@@ -11,16 +11,18 @@ AIRPORT_ICAO = "ESGG"
 #AIRPORT_ICAO = "ESMS" #Malmo
 #AIRPORT_ICAO = "ESSL" #Linkoping 
 
-#DEPARTURE = True
-DEPARTURE = False
+AIRPORT_ICAO = "ENGM" # Oslo
 
-YEAR = '2020'
+DEPARTURE = True
+#DEPARTURE = False
+
+YEAR = '2019'
 
 #MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
-MONTHS = ['02']
+MONTHS = ['10']
 
 #WEEKS = [1,2,3,4,5]
-WEEKS = [5]
+WEEKS = [3]
 
 
 # AREA possible values: "TMA", "CIRCLE"
@@ -61,3 +63,5 @@ elif AIRPORT_ICAO == "LOWW":
     from airports.constants_LOWW import *
 elif AIRPORT_ICAO == "ESSL":
     from airports.constants_ESSL import *
+elif AIRPORT_ICAO == "ENGM":
+    from airports.constants_ENGM import *
