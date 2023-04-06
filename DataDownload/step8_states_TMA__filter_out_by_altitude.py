@@ -8,7 +8,7 @@ DATA_DIR = os.path.join(DATA_DIR, YEAR)
 
 area = (str(RADIUS) + "NM", "TMA")[AREA == "TMA"]
 INPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR + "_smoothed")
-OUTPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR)
+OUTPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR + "_filtered_by_altitude")
 
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
@@ -16,7 +16,8 @@ if not os.path.exists(OUTPUT_DIR):
 
 # flights with the last altitude value less than this value are considered as 
 # landed and with complete data
-descent_end_altitude = 600 #meters
+#descent_end_altitude = 600 #meters
+descent_end_altitude = 1200 #meters
 
 if AIRPORT_ICAO == "ESGG":
     descent_end_altitude = 1200 #meters
@@ -62,6 +63,9 @@ for month in MONTHS:
         number_of_flights = len(df.groupby(level='flightId'))
         count = 0
         
+        count1 = 0
+        count2 = 0
+        
         for flight_id, flight_id_group in df.groupby(level='flightId'):
             
             count = count + 1
@@ -99,6 +103,7 @@ for month in MONTHS:
                 
                 if last_height > descent_end_altitude:
                     df = df.drop(flight_id)
+                    count1 = count1 + 1
                     continue
                 
                 ###################################################################
@@ -110,6 +115,7 @@ for month in MONTHS:
                 
                 if first_height < descent_end_altitude:
                     df = df.drop(flight_id)
+                    count2 = count2 + 1
                     continue
                     
         filename = AIRPORT_ICAO + '_states_' + area + '_' + YEAR + '_' + month + '_week' + str(week) + '.csv'
@@ -122,5 +128,7 @@ for month in MONTHS:
         full_filename = os.path.join(OUTPUT_DIR, filename)
         
         df.to_csv(full_filename, sep=' ', encoding='utf-8', float_format='%.6f', header=False, index=True)
+        
+        print(count1, count2)
 
 print((time.time()-start_time)/60)

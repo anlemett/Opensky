@@ -4,6 +4,10 @@ from config import *
 # needed to determine altitude fluctuation at the first point
 TMA_altitude_threshold = 9000
 
+if RADIUS == 250:
+    TMA_altitude_threshold = 13000
+
+
 # Alternative solution - make TMA_altitude_threshold different for diferent airports
 # If TMA_altitude_threshold is too big, the fluctuation at first point might be treated as the normal altitude, then the next normal
 # altitude is considered as fluctuation, as a result we get wrong vertical profile (horizontal line). The flight might be filtered out
@@ -42,7 +46,7 @@ DATA_DIR = os.path.join(DATA_DIR, AIRPORT_ICAO)
 DATA_DIR = os.path.join(DATA_DIR, YEAR)
 
 area = (str(RADIUS) + "NM", "TMA")[AREA == "TMA"]
-INPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR + "_filtered")
+INPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR + "_filtered_by_callsign")
 OUTPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR + "_smoothed")
 
 if not os.path.exists(OUTPUT_DIR):
@@ -83,6 +87,10 @@ for month in MONTHS:
         
         new_df = pd.DataFrame(columns=['flightId', 'sequence', 'timestamp', 'lat', 'lon', 'rawAltitude', 'altitude', 'velocity', 'beginDate', 'endDate'],
                               dtype=str)
+        
+        dropped_df = pd.DataFrame(columns=['flightId', 'sequence', 'timestamp', 'lat', 'lon', 'rawAltitude', 'altitude', 'velocity', 'beginDate', 'endDate'],
+                              dtype=str)
+        dropped_df.set_index(['flightId', 'sequence'], inplace=True)
 
         df.set_index(['flightId', 'sequence'], inplace = True)
         
@@ -124,6 +132,10 @@ for month in MONTHS:
 
                 first_good_altitude = shift
                 if first_good_altitude == df_len-1:    # flight on cruise or bad data
+                    print("CRUISE", flight_id)
+                    flight_states_df.reset_index(drop = False, inplace = True)
+                    flight_states_df.set_index(['flightId', 'sequence'], inplace=True)
+                    dropped_df = dropped_df.append(flight_states_df)
                     continue
                 
                 while shift>0:
@@ -195,5 +207,11 @@ for month in MONTHS:
         full_filename = os.path.join(OUTPUT_DIR, filename)
         
         new_df.to_csv(full_filename, sep=' ', encoding='utf-8', float_format='%.6f', header=False, index=False)
+        
+        full_filename = os.path.join(OUTPUT_DIR, "dropped.csv")
+        #dropped_df = dropped_df.reset_index(drop=False)
+        #dropped_df.set_index(['flightId', 'sequence'], inplace=True)
+        
+        dropped_df.to_csv(full_filename, sep=' ', encoding='utf-8', float_format='%.6f', header=False, index=True)
 
 print((time.time()-start_time)/60)

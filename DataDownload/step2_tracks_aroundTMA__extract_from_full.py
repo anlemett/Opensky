@@ -128,7 +128,7 @@ def check_TMA_contains_point(point):
     return polygon.contains(point)
 
 
-# departures - start from the first waypoint outside the circle
+# departures - end with the first waypoint outside the circle
 # arrivals - start from the last waypont outside the circle
 def get_tracks_inside_circle(month, week, tracks_df, csv_output_file):
 
@@ -144,7 +144,7 @@ def get_tracks_inside_circle(month, week, tracks_df, csv_output_file):
         if DEPARTURE:
             first_point_outside_circle_index = get_first_point_outside_circle(flight_id, new_df)
             
-            if first_point_outside_circle_index == -1 or first_point_outside_circle_index == 0:
+            if first_point_outside_circle_index == -1:
                 continue
             
             new_df_inside_circle = new_df.iloc[:first_point_outside_circle_index+1].copy()
@@ -152,7 +152,7 @@ def get_tracks_inside_circle(month, week, tracks_df, csv_output_file):
         else:
             first_point_inside_circle_index = get_first_point_inside_circle(flight_id, new_df)
             
-            if first_point_inside_circle_index == -1 or first_point_inside_circle_index == 0:
+            if first_point_inside_circle_index == -1:
                 continue
             
             last_point_outside_circle_index = first_point_inside_circle_index - 1

@@ -7,8 +7,11 @@ DATA_DIR = os.path.join(DATA_DIR, AIRPORT_ICAO)
 DATA_DIR = os.path.join(DATA_DIR, YEAR)
 
 area = (str(RADIUS) + "NM", "TMA")[AREA == "TMA"]
-INPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR)
+INPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR + "_filtered_by_altitude")
 OUTPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR)
+
+if not os.path.exists(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR)
 
 import pandas as pd
 import numpy as np
