@@ -1,4 +1,6 @@
 from config import *
+import warnings
+warnings.filterwarnings('ignore')
 
 import os
 
@@ -8,7 +10,7 @@ DATA_DIR = os.path.join(DATA_DIR, YEAR)
 
 area = ("around" + str(RADIUS) + "NM", "aroundTMA")[AREA == "TMA"]
 INPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_tracks_" + area + "_" + YEAR)
-OUTPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + "_" + YEAR)
+OUTPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + "_" + YEAR + "_downloaded")
 
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)

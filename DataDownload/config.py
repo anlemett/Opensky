@@ -1,5 +1,5 @@
 
-#AIRPORT_ICAO = "ESSA"
+AIRPORT_ICAO = "ESSA"
 #AIRPORT_ICAO = "ESGG"
 #AIRPORT_ICAO = "EIDW" # Dublin
 #AIRPORT_ICAO = "LOWW" # Vienna
@@ -11,7 +11,7 @@
 #AIRPORT_ICAO = "ESMS" #Malmo
 #AIRPORT_ICAO = "ESSL" #Linkoping 
 
-AIRPORT_ICAO = "ENGM" # Oslo
+#AIRPORT_ICAO = "ENGM" # Oslo
 
 #DEPARTURE = True
 DEPARTURE = False

@@ -1,4 +1,6 @@
 from config import *
+import warnings
+warnings.filterwarnings('ignore')
 
 import os
 
@@ -8,7 +10,7 @@ DATA_DIR = os.path.join(DATA_DIR, YEAR)
 
 area = (str(RADIUS) + "NM", "TMA")[AREA == "TMA"]
 INPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR + "_filtered_by_altitude")
-OUTPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR)
+OUTPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + '_' + YEAR + "_filtered_by_latitude")
 
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
@@ -20,11 +22,21 @@ import calendar
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
+from geopy.distance import geodesic
+
 import time
 start_time = time.time()
 
 flight_type = "Departure" if DEPARTURE else "Arrival"
 
+def circle_contains(radius, point):
+    central_point = (CENTRAL_LAT, CENTRAL_LON)
+    distance = geodesic(central_point, point).meters
+    
+    if distance < radius:
+        return True
+    else:
+        return False
 
 for month in MONTHS:
     
@@ -83,15 +95,29 @@ for month in MONTHS:
                 
                 for seq, row in flight_states_df.iterrows():
                     
-                    point = Point(row["lon"], row["lat"])
-                    
-                    if not polygon.contains(point):
-                        remove = True
-                        break
+                    if AREA == "TMA":
                         
-            if remove:
-                df = df.drop(flight_id)
-                continue
+                        point = Point(row["lon"], row["lat"])
+                        
+                        if not polygon.contains(point):
+                            remove = True
+                            break
+                    
+                    else: # AREA == "CIRCLE"
+                        
+                        lat = row['lat']
+                        lon = row['lon']
+                        point = (lat, lon)
+                        
+                        radius = (RADIUS+30)*1852 # 30NM ~ 0.5 degree
+                        
+                        if not circle_contains(radius, point):
+                            remove = True
+                            break
+                
+                if remove:
+                    df = df.drop(flight_id)
+                    continue
         
         
         filename = AIRPORT_ICAO + '_states_'+ area +'_' + YEAR + '_' + month + '_week' + str(week) + '.csv'

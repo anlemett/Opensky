@@ -1,4 +1,6 @@
 from config import *
+import warnings
+warnings.filterwarnings('ignore')
 
 import os
 
@@ -16,8 +18,7 @@ if not os.path.exists(OUTPUT_DIR):
 
 # flights with the last altitude value less than this value are considered as 
 # landed and with complete data
-#descent_end_altitude = 600 #meters
-descent_end_altitude = 1200 #meters
+descent_end_altitude = 600 #meters
 
 if AIRPORT_ICAO == "ESGG":
     descent_end_altitude = 1200 #meters
@@ -73,16 +74,18 @@ for month in MONTHS:
             
             if DEPARTURE:
                 
-                ###################################################################
-                # Last altitude too small (incomplete data or bad smoothing):
-                ###################################################################
+                if (AREA == "TMA") or (AREA == "CIRCLE" and RADUIS <= 50):
                 
-                altitudes = flight_id_group['altitude']
-                last_height = altitudes.tolist()[-1]
+                    ###################################################################
+                    # Last altitude too small (incomplete data or bad smoothing):
+                    ###################################################################
                 
-                if last_height < climb_end_altitude:
-                    df = df.drop(flight_id)
-                    continue
+                    altitudes = flight_id_group['altitude']
+                    last_height = altitudes.tolist()[-1]
+                    
+                    if last_height < climb_end_altitude:
+                        df = df.drop(flight_id)
+                        continue
                 
                 ###################################################################
                 # First altitude too big (incomplete data):
@@ -106,18 +109,20 @@ for month in MONTHS:
                     count1 = count1 + 1
                     continue
                 
-                ###################################################################
-                # First altitude too small (departure and arrival at the same airport):
-                ###################################################################
+                if (AREA == "TMA") or (AREA == "CIRCLE" and RADIUS <= 50):
+                    ###################################################################
+                    # First altitude too small (departure and arrival at the same airport):
+                    ###################################################################
                 
-                altitudes = flight_id_group['altitude']
-                first_height = altitudes.tolist()[0]
+                    altitudes = flight_id_group['altitude']
+                    first_height = altitudes.tolist()[0]
                 
-                if first_height < descent_end_altitude:
-                    df = df.drop(flight_id)
-                    count2 = count2 + 1
-                    continue
+                    if first_height < descent_end_altitude:
+                        df = df.drop(flight_id)
+                        count2 = count2 + 1
+                        continue
                     
+        print(count1, count2)
         filename = AIRPORT_ICAO + '_states_' + area + '_' + YEAR + '_' + month + '_week' + str(week) + '.csv'
         
         if DEPARTURE:

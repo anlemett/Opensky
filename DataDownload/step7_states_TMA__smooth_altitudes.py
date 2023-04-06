@@ -1,11 +1,13 @@
 from config import *
+import warnings
+warnings.filterwarnings('ignore')
 
 # maximum alitude (ceiling) arrival aircraft enter the TMA
 # needed to determine altitude fluctuation at the first point
 TMA_altitude_threshold = 9000
 
 if RADIUS == 250:
-    TMA_altitude_threshold = 13000
+    TMA_altitude_threshold = 15000
 
 
 # Alternative solution - make TMA_altitude_threshold different for diferent airports
@@ -94,8 +96,6 @@ for month in MONTHS:
 
         df.set_index(['flightId', 'sequence'], inplace = True)
         
-        #print(df.head(1))
-
         number_of_flights = len(df.groupby(level='flightId'))
         count = 0
 
@@ -113,6 +113,7 @@ for month in MONTHS:
             
             flight_states_df.reset_index(drop = False, inplace = True)
             df_len = len(flight_states_df)
+            
             flight_states_df.set_index('sequence', inplace=True)
             
             if not flight_states_df.empty:
@@ -132,7 +133,6 @@ for month in MONTHS:
 
                 first_good_altitude = shift
                 if first_good_altitude == df_len-1:    # flight on cruise or bad data
-                    print("CRUISE", flight_id)
                     flight_states_df.reset_index(drop = False, inplace = True)
                     flight_states_df.set_index(['flightId', 'sequence'], inplace=True)
                     dropped_df = dropped_df.append(flight_states_df)
@@ -193,8 +193,6 @@ for month in MONTHS:
             flight_states_df = flight_states_df[['flightId', 'sequence', 'timestamp', 'lat', 'lon', 'rawAltitude', 'altitude', 'velocity', 'beginDate', 'endDate']]
             
             new_df = new_df.append(flight_states_df)
-            
-            #print(new_df.head(1))
         
         
         filename = AIRPORT_ICAO + '_states_' + area + '_smoothed_' + YEAR + '_' + month + '_week' + str(week) + '.csv'
@@ -208,10 +206,4 @@ for month in MONTHS:
         
         new_df.to_csv(full_filename, sep=' ', encoding='utf-8', float_format='%.6f', header=False, index=False)
         
-        full_filename = os.path.join(OUTPUT_DIR, "dropped.csv")
-        #dropped_df = dropped_df.reset_index(drop=False)
-        #dropped_df.set_index(['flightId', 'sequence'], inplace=True)
-        
-        dropped_df.to_csv(full_filename, sep=' ', encoding='utf-8', float_format='%.6f', header=False, index=True)
-
 print((time.time()-start_time)/60)

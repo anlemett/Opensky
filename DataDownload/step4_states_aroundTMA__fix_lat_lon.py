@@ -1,11 +1,13 @@
 from config import *
+import warnings
+warnings.filterwarnings('ignore')
 
 # Threshold for lat/lon fluctuattion
 # If the threshold is too big, small fluctuations will be skiped
 # If the threshold is too small, the real value might be treated as fluctuation, hence the whole trajectory is messed up
 threshold1 = 0.1 # degree
 # This threshold helps to fix 0 lat and lon (might be helpful if TMA close to 0 parallel or medidian) 
-threshold2 = 10 # degree
+threshold2 = RADIUS/5 # degree
 
 import os
 
@@ -14,7 +16,7 @@ DATA_DIR = os.path.join(DATA_DIR, AIRPORT_ICAO)
 DATA_DIR = os.path.join(DATA_DIR, YEAR)
 
 area = ("around" + str(RADIUS) + "NM", "aroundTMA")[AREA == "TMA"]
-INPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + "_" + YEAR)
+INPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + "_" + YEAR + "_downloaded")
 OUTPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + "_" + YEAR + "_fixed_lat_lon")
 
 if not os.path.exists(OUTPUT_DIR):
@@ -61,7 +63,7 @@ for month in MONTHS:
             dtype=str)
 
         count = 0
-
+        
         for flight_id, flight_df in df.groupby(level='flightId'):
             
             count = count + 1
@@ -82,11 +84,11 @@ for month in MONTHS:
                 while (abs(abs(lats[first_good_point_index]) - abs (central_lat)) > threshold2) and \
                       (abs(abs(lons[first_good_point_index]) - abs (central_lon)) > threshold2):
                     first_good_point_index = first_good_point_index + 1
-
+                
                 for lat_lon_index in range(0,first_good_point_index):
                     lats[lat_lon_index] = lats[first_good_point_index]
                     lons[lat_lon_index] = lons[first_good_point_index]
-                    
+                
                 prev_lat = lats[first_good_point_index]
                 prev_lon = lons[first_good_point_index]
                 
@@ -117,12 +119,11 @@ for month in MONTHS:
                             
                     prev_lat = lats[i]
                 
-                
                 for i in range(first_good_point_index, number_of_points):
                     
                     shift = 0
                     too_long_shift = False # if the longitudes are the same for some time (error) and then we get the right longitude but the difference is bigger than threshold
-                    
+
                     while ((i+shift < number_of_points-1) and ((abs(abs(lons[i+shift]) - abs (prev_lon)) > threshold1) and not too_long_shift or \
                             (abs(abs(lons[i+shift]) - abs (prev_lon)) == 0))) or (abs(abs(lons[i+shift]) - abs (central_lon)) > threshold2):
                         shift = shift + 1

@@ -1,4 +1,6 @@
 from config import *
+import warnings
+warnings.filterwarnings('ignore')
 
 from datetime import datetime
 from datetime import timezone

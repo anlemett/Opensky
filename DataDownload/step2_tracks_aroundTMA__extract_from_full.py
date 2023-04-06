@@ -1,4 +1,6 @@
 from config import *
+import warnings
+warnings.filterwarnings('ignore')
 
 import pandas as pd
 import numpy as np
@@ -138,14 +140,16 @@ def get_tracks_inside_circle(month, week, tracks_df, csv_output_file):
 
     count = 1
     for flight_id, new_df in tracks_df.groupby(level='flightId'):
+        
         print("STEP2", flight_type, area, AIRPORT_ICAO, YEAR, month, week, number_of_flights, count, flight_id)
         count = count + 1
         
         if DEPARTURE:
             first_point_outside_circle_index = get_first_point_outside_circle(flight_id, new_df)
             
-            if first_point_outside_circle_index == -1:
-                continue
+            # last point might be within circle with big radius
+            #if first_point_outside_circle_index == -1:
+            #    continue
             
             new_df_inside_circle = new_df.iloc[:first_point_outside_circle_index+1].copy()
         
@@ -155,7 +159,10 @@ def get_tracks_inside_circle(month, week, tracks_df, csv_output_file):
             if first_point_inside_circle_index == -1:
                 continue
             
-            last_point_outside_circle_index = first_point_inside_circle_index - 1
+            if first_point_inside_circle_index == 0:
+                last_point_outside_circle_index = 0
+            else:
+                last_point_outside_circle_index = first_point_inside_circle_index - 1
             
             new_df_inside_circle = new_df.iloc[last_point_outside_circle_index:].copy()
             
