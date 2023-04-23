@@ -156,6 +156,7 @@ def get_states_inside_circle(states_df, month, week):
             new_df_inside_circle = flight_df.loc[flight_df.index.get_level_values('sequence') <= last_point_index]
             
         else: # arrival
+            
             first_point_index = get_circle_first_point_index(flight_id, flight_df)
             
             if first_point_index==-1:

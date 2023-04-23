@@ -29,7 +29,7 @@ WEEKS = [5]
 #AREA = "TMA"
 AREA = "CIRCLE"
 
-RADIUS = 250 # in NM
+RADIUS = 50 # in NM
 
 # append the path of the parent directory
 import sys

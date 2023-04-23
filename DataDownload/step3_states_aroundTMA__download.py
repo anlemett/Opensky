@@ -15,6 +15,8 @@ OUTPUT_DIR = os.path.join(DATA_DIR, "osn_" + AIRPORT_ICAO + "_states_" + area + 
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
 
+log_filename = "not_downloaded_states_" + YEAR + '.txt'
+full_log_filename = os.path.join(OUTPUT_DIR, log_filename)
 
 from datetime import datetime
 import pytz
@@ -189,6 +191,7 @@ def download_states_week(month, week):
             index_col=[0,1], dtype={'flightId':str, 'sequence':int, 'icao24': str, 'timestamp':int})
 
 
+    dropped_flights_file = open(full_log_filename, 'a+')
 
     number_of_flights = len(opensky_tracks_df.groupby(level='flightId'))
 
@@ -215,6 +218,10 @@ def download_states_week(month, week):
             flight_id_states_df.set_index(['flight_id'], inplace=True)
             
             opensky_states_df = pd.concat([opensky_states_df, flight_id_states_df], axis=0, sort=False)
+            
+        else:
+            print(flight_id, file = dropped_flights_file)
+
     
     # fix "time" inserted
     opensky_states_df = opensky_states_df[opensky_states_df.timestamp != "time"]
